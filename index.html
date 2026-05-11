@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Ｋｒｅｕｚｗｏｒｔｒäｔｓｅｌ</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&family=Space+Mono:wght@400;700&display=swap');
+
+:root {
+  --bg:       #0d0015;
+  --purple:   #6b21a8;
+  --pink:     #e040fb;
+  --cyan:     #00e5ff;
+  --teal:     #00bfa5;
+  --lavender: #ce93d8;
+  --white:    #f0e6ff;
+  --surface:  rgba(255,255,255,0.04);
+  --cell:     40px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--white);
+  font-family: 'Space Grotesk', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* ── BACKGROUND ── */
+.bg-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* Grid floor */
+.bg-grid {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 55vh;
+  background-image:
+    linear-gradient(rgba(0,229,255,0.18) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,229,255,0.18) 1px, transparent 1px);
+  background-size: 40px 40px;
+  transform: perspective(400px) rotateX(55deg);
+  transform-origin: bottom center;
+  mask-image: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 100%);
+}
+
+/* Gradient sky */
+.bg-sky {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    #0d0015 0%,
+    #1a0030 30%,
+    #2d0050 55%,
+    #0d0015 100%
+  );
+}
+
+/* Sun / halo */
+.bg-sun {
+  position: absolute;
+  left: 50%;
+  top: 38%;
+  transform: translate(-50%, -50%);
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #ff6ec7 0%, #ffb347 60%, #ff6ec7 100%);
+  box-shadow:
+    0 0 60px 20px rgba(255,110,199,0.35),
+    0 0 120px 40px rgba(255,110,199,0.15);
+  overflow: hidden;
+}
+.bg-sun::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    180deg,
+    transparent 0px,
+    transparent 12px,
+    var(--bg) 12px,
+    var(--bg) 16px
+  );
+  opacity: 0.65;
+  bottom: 0;
+}
+
+/* Scanlines */
+.bg-scan {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,0.08) 2px,
+    rgba(0,0,0,0.08) 4px
+  );
+}
+
+/* Statue SVG */
+.bg-statue {
+  position: absolute;
+  right: 4%;
+  bottom: 28%;
+  width: min(220px, 28vw);
+  opacity: 0.13;
+  filter: drop-shadow(0 0 18px rgba(224,64,251,0.5));
+}
+
+/* Glow lines */
+.bg-line {
+  position: absolute;
+  left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--pink), transparent);
+  opacity: 0.4;
+}
+.bg-line:nth-child(1) { top: 42%; }
+.bg-line:nth-child(2) { top: 44%; opacity: 0.2; }
+
+/* ── CONTENT ── */
+.content { position: relative; z-index: 1; }
+
+/* ── HEADER ── */
+header {
+  text-align: center;
+  padding: 36px 20px 24px;
+}
+
+.eyebrow {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 5px;
+  color: var(--cyan);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  opacity: 0.8;
+}
+
+h1 {
+  font-size: clamp(2rem, 7vw, 3.4rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -1px;
+  background: linear-gradient(90deg, var(--cyan) 0%, var(--pink) 50%, var(--lavender) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: none;
+  filter: drop-shadow(0 0 20px rgba(224,64,251,0.4));
+}
+
+.tagline {
+  font-size: 11px;
+  color: var(--lavender);
+  margin-top: 8px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+/* ── STATUS ── */
+.status {
+  display: flex;
+  justify-content: center;
+  gap: 0;
+  margin: 0 auto 20px;
+  max-width: 400px;
+  border: 1px solid rgba(224,64,251,0.3);
+  border-radius: 4px;
+  overflow: hidden;
+  backdrop-filter: blur(8px);
+  background: rgba(107,33,168,0.15);
+  width: calc(100% - 28px);
+}
+.status-item {
+  flex: 1;
+  text-align: center;
+  padding: 10px 8px;
+  border-right: 1px solid rgba(224,64,251,0.2);
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--lavender);
+  opacity: 0.9;
+}
+.status-item:last-child { border-right: none; }
+.status-item strong {
+  display: block;
+  font-family: 'Space Mono', monospace;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--cyan);
+  letter-spacing: -1px;
+  line-height: 1.2;
+  margin-bottom: 2px;
+  text-shadow: 0 0 10px rgba(0,229,255,0.5);
+}
+
+/* ── MAIN ── */
+.main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 14px 52px;
+  gap: 16px;
+}
+
+/* ── ACTIVE CLUE ── */
+#active-clue {
+  width: 100%;
+  max-width: 580px;
+  background: rgba(107,33,168,0.2);
+  border: 1px solid rgba(0,229,255,0.3);
+  border-left: 3px solid var(--cyan);
+  padding: 11px 16px;
+  font-size: 13px;
+  line-height: 1.5;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  opacity: 0;
+  transition: opacity 0.18s;
+  border-radius: 0 4px 4px 0;
+  backdrop-filter: blur(10px);
+  min-height: 46px;
+  color: var(--white);
+}
+#active-clue.visible { opacity: 1; }
+.clue-tag {
+  font-family: 'Space Mono', monospace;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--cyan);
+  white-space: nowrap;
+  min-width: 28px;
+  text-shadow: 0 0 8px rgba(0,229,255,0.6);
+}
+
+/* ── SUCCESS ── */
+#success-banner {
+  display: none;
+  width: 100%;
+  max-width: 580px;
+  background: linear-gradient(90deg, rgba(224,64,251,0.2), rgba(0,229,255,0.2));
+  border: 1px solid var(--pink);
+  color: var(--white);
+  text-align: center;
+  padding: 18px 24px;
+  font-size: 15px;
+  font-weight: 500;
+  border-radius: 4px;
+  letter-spacing: 1px;
+  animation: popIn 0.35s ease;
+  box-shadow: 0 0 30px rgba(224,64,251,0.3);
+  backdrop-filter: blur(10px);
+}
+@keyframes popIn { from { opacity:0; transform:scale(0.97); } to { opacity:1; transform:scale(1); } }
+
+/* ── GRID ── */
+.grid-scroll { overflow-x: auto; max-width: 100%; }
+
+#grid-table {
+  border-collapse: collapse;
+  border: 2px solid var(--pink);
+  box-shadow:
+    0 0 0 1px rgba(224,64,251,0.3),
+    0 0 30px rgba(224,64,251,0.2),
+    0 0 60px rgba(0,229,255,0.1);
+}
+#grid-table td {
+  width: var(--cell);
+  height: var(--cell);
+  padding: 0;
+  border: 1px solid rgba(224,64,251,0.25);
+}
+#grid-table td.black {
+  background: #0d0015;
+  border-color: rgba(224,64,251,0.15);
+  position: relative;
+}
+#grid-table td.black::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(107,33,168,0.2) 0%, transparent 100%);
+}
+
+.cell-wrap {
+  width: var(--cell);
+  height: var(--cell);
+  position: relative;
+  background: rgba(255,255,255,0.04);
+  /* Tile effect */
+  background-image:
+    linear-gradient(rgba(224,64,251,0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(224,64,251,0.06) 1px, transparent 1px);
+  background-size: 10px 10px;
+}
+.cell-num {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  font-size: 7.5px;
+  color: var(--cyan);
+  font-family: 'Space Mono', monospace;
+  line-height: 1;
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0.9;
+  text-shadow: 0 0 4px rgba(0,229,255,0.8);
+}
+.cell-input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: transparent;
+  text-align: center;
+  font-family: 'Space Mono', monospace;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--white);
+  text-transform: uppercase;
+  cursor: pointer;
+  outline: none;
+  caret-color: transparent;
+  padding-top: 6px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.cell-wrap.active {
+  background: rgba(0,229,255,0.12) !important;
+  box-shadow: inset 0 0 8px rgba(0,229,255,0.2);
+}
+.cell-wrap.highlighted {
+  background: rgba(224,64,251,0.08) !important;
+}
+.cell-wrap.correct .cell-input {
+  color: var(--teal);
+  text-shadow: 0 0 8px rgba(0,191,165,0.7);
+}
+.cell-wrap.wrong .cell-input {
+  color: #ff4c8b;
+  text-shadow: 0 0 8px rgba(255,76,139,0.5);
+}
+.cell-wrap.revealed .cell-input {
+  color: var(--lavender);
+  opacity: 0.6;
+}
+
+/* ── CONTROLS ── */
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  width: 100%;
+  max-width: 580px;
+}
+button {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 9px 18px;
+  border: 1px solid rgba(0,229,255,0.4);
+  background: rgba(0,229,255,0.05);
+  color: var(--cyan);
+  cursor: pointer;
+  border-radius: 3px;
+  transition: all 0.13s;
+  backdrop-filter: blur(4px);
+}
+button:hover {
+  background: rgba(0,229,255,0.15);
+  border-color: var(--cyan);
+  box-shadow: 0 0 12px rgba(0,229,255,0.2);
+}
+button.primary {
+  background: rgba(224,64,251,0.12);
+  border-color: rgba(224,64,251,0.5);
+  color: var(--pink);
+}
+button.primary:hover {
+  background: rgba(224,64,251,0.25);
+  box-shadow: 0 0 12px rgba(224,64,251,0.3);
+}
+
+/* ── CLUES ── */
+.clues-container {
+  width: 100%;
+  max-width: 580px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.clue-section {
+  background: rgba(107,33,168,0.12);
+  border: 1px solid rgba(224,64,251,0.2);
+  border-radius: 4px;
+  padding: 14px 12px 10px;
+  backdrop-filter: blur(8px);
+}
+.clue-section h2 {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--pink);
+  padding-bottom: 8px;
+  margin-bottom: 6px;
+  border-bottom: 1px solid rgba(224,64,251,0.2);
+  text-shadow: 0 0 8px rgba(224,64,251,0.5);
+}
+.clue-item {
+  display: flex;
+  gap: 8px;
+  padding: 5px 4px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: rgba(240,230,255,0.7);
+  transition: background 0.1s;
+}
+.clue-item:hover { background: rgba(0,229,255,0.07); color: var(--white); }
+.clue-item.active { background: rgba(0,229,255,0.1); color: var(--white); }
+.clue-item.done { opacity: 0.3; text-decoration: line-through; }
+.clue-num {
+  font-family: 'Space Mono', monospace;
+  font-weight: 700;
+  font-size: 10px;
+  color: var(--cyan);
+  min-width: 16px;
+  padding-top: 1px;
+  text-shadow: 0 0 6px rgba(0,229,255,0.6);
+}
+
+/* ── KEYBOARD ── */
+#keyboard { display: flex; flex-direction: column; gap: 6px; align-items: center; }
+.kb-row { display: flex; gap: 5px; }
+.kb-key {
+  width: 30px;
+  height: 36px;
+  background: rgba(107,33,168,0.25);
+  border: 1px solid rgba(224,64,251,0.3);
+  font-family: 'Space Mono', monospace;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  box-shadow: 0 2px 0 rgba(0,0,0,0.4), 0 0 6px rgba(107,33,168,0.2);
+  transition: all 0.07s;
+  color: var(--lavender);
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  backdrop-filter: blur(4px);
+}
+.kb-key:hover { color: var(--white); border-color: var(--cyan); box-shadow: 0 2px 0 rgba(0,0,0,0.4), 0 0 10px rgba(0,229,255,0.2); }
+.kb-key:active { transform: translateY(2px); box-shadow: none; }
+.kb-key.wide { width: 46px; font-size: 11px; }
+
+/* ── DECORATION ── */
+.deco-line {
+  width: 100%;
+  max-width: 580px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--pink), transparent);
+  opacity: 0.3;
+}
+
+@media (max-width: 480px) {
+  :root { --cell: 32px; }
+  .clues-container { grid-template-columns: 1fr; }
+  .kb-key { width: 26px; height: 33px; font-size: 11px; }
+  .kb-key.wide { width: 40px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Background layers -->
+<div class="bg-layer">
+  <div class="bg-sky"></div>
+  <div class="bg-sun"></div>
+  <div class="bg-line"></div>
+  <div class="bg-line"></div>
+  <div class="bg-grid"></div>
+  <div class="bg-scan"></div>
+
+  <!-- Greco-Roman Bust SVG -->
+  <svg class="bg-statue" viewBox="0 0 300 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- Pedestal -->
+    <rect x="80" y="430" width="140" height="20" rx="2" fill="white"/>
+    <rect x="70" y="445" width="160" height="30" rx="2" fill="white"/>
+    <rect x="60" y="470" width="180" height="15" rx="1" fill="white"/>
+    <!-- Neck/torso base -->
+    <path d="M115 420 Q100 410 95 390 L90 350 Q85 330 90 310 L95 280 Q105 260 120 250 L130 240 Q140 230 150 230 Q160 230 170 240 L180 250 Q195 260 205 280 L210 310 Q215 330 210 350 L205 390 Q200 410 185 420 Z" fill="white"/>
+    <!-- Toga/drape lines -->
+    <path d="M95 380 Q110 370 130 375 Q150 380 170 375 Q190 370 205 380" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" fill="none"/>
+    <path d="M93 360 Q115 350 150 355 Q185 350 207 360" stroke="rgba(255,255,255,0.2)" stroke-width="1" fill="none"/>
+    <!-- Shoulder lines -->
+    <path d="M90 330 Q95 325 105 328" stroke="rgba(255,255,255,0.25)" stroke-width="1" fill="none"/>
+    <path d="M210 330 Q205 325 195 328" stroke="rgba(255,255,255,0.25)" stroke-width="1" fill="none"/>
+    <!-- Neck -->
+    <path d="M130 235 Q140 220 150 218 Q160 220 170 235 L172 245 Q160 250 150 252 Q140 250 128 245 Z" fill="white"/>
+    <!-- Head shape -->
+    <ellipse cx="150" cy="165" rx="58" ry="68" fill="white"/>
+    <!-- Jaw/chin -->
+    <path d="M105 195 Q120 230 150 235 Q180 230 195 195" fill="white"/>
+    <!-- Eyes -->
+    <ellipse cx="130" cy="155" rx="14" ry="9" fill="rgba(0,0,0,0.15)"/>
+    <ellipse cx="170" cy="155" rx="14" ry="9" fill="rgba(0,0,0,0.15)"/>
+    <ellipse cx="130" cy="155" rx="7" ry="6" fill="rgba(0,0,0,0.2)"/>
+    <ellipse cx="170" cy="155" rx="7" ry="6" fill="rgba(0,0,0,0.2)"/>
+    <!-- Brow ridge -->
+    <path d="M115 144 Q130 138 145 142" stroke="white" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M155 142 Q170 138 185 144" stroke="white" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <!-- Nose -->
+    <path d="M150 148 L146 175 Q149 180 150 180 Q151 180 154 175 L150 148" fill="rgba(0,0,0,0.1)"/>
+    <path d="M143 176 Q150 182 157 176" stroke="rgba(0,0,0,0.12)" stroke-width="1.5" fill="none"/>
+    <!-- Mouth -->
+    <path d="M133 192 Q142 198 150 198 Q158 198 167 192" stroke="rgba(0,0,0,0.15)" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M136 192 Q150 189 164 192" stroke="rgba(0,0,0,0.08)" stroke-width="1" fill="none"/>
+    <!-- Ear left -->
+    <ellipse cx="93" cy="170" rx="9" ry="14" fill="white"/>
+    <!-- Ear right -->
+    <ellipse cx="207" cy="170" rx="9" ry="14" fill="white"/>
+    <!-- Hair / laurel wreath -->
+    <path d="M95 130 Q100 108 115 98 Q130 88 150 86 Q170 88 185 98 Q200 108 205 130" fill="rgba(255,255,255,0.4)" stroke="white" stroke-width="1"/>
+    <!-- Laurel leaves left -->
+    <ellipse cx="102" cy="122" rx="8" ry="5" transform="rotate(-30 102 122)" fill="rgba(255,255,255,0.6)"/>
+    <ellipse cx="112" cy="108" rx="8" ry="5" transform="rotate(-15 112 108)" fill="rgba(255,255,255,0.6)"/>
+    <ellipse cx="125" cy="98" rx="8" ry="5" transform="rotate(0 125 98)" fill="rgba(255,255,255,0.6)"/>
+    <!-- Laurel leaves right -->
+    <ellipse cx="198" cy="122" rx="8" ry="5" transform="rotate(30 198 122)" fill="rgba(255,255,255,0.6)"/>
+    <ellipse cx="188" cy="108" rx="8" ry="5" transform="rotate(15 188 108)" fill="rgba(255,255,255,0.6)"/>
+    <ellipse cx="175" cy="98" rx="8" ry="5" transform="rotate(0 175 98)" fill="rgba(255,255,255,0.6)"/>
+    <ellipse cx="150" cy="92" rx="8" ry="5" fill="rgba(255,255,255,0.6)"/>
+    <!-- Crack details for marble feel -->
+    <path d="M140 120 Q142 135 139 145" stroke="rgba(0,0,0,0.06)" stroke-width="0.8" fill="none"/>
+    <path d="M165 160 Q168 170 166 182" stroke="rgba(0,0,0,0.05)" stroke-width="0.7" fill="none"/>
+    <path d="M120 300 Q125 320 122 340" stroke="rgba(0,0,0,0.07)" stroke-width="0.8" fill="none"/>
+  </svg>
+</div>
+
+<div class="content">
+  <header>
+    <div class="eyebrow">
+    <h1>ＫＲＥＵＺＷＯＲＴ<br>ＲÄＴＳＥＬ</h1>
+    <p class="tagline">１０ Wörter · Personen &amp; Orte</p>
+  </header>
+
+  <div class="status">
+    <div class="status-item"><strong id="solved-count">0</strong>gelöst</div>
+    <div class="status-item"><strong id="total-count">10</strong>gesamt</div>
+    <div class="status-item"><strong id="pct">0%</strong>Fortschritt</div>
+  </div>
+
+  <div class="main">
+    <div id="active-clue"><span class="clue-tag" id="active-tag"></span><span id="active-text"></span></div>
+    <div id="success-banner">🌴 Ａｌｌｅｓ ｇｅｌöｓｔ！ 🌴</div>
+
+    <div class="grid-scroll">
+      <table id="grid-table"><tbody id="grid-body"></tbody></table>
+    </div>
+
+    <div class="controls">
+      <button onclick="checkAll()">Prüfen</button>
+      <button onclick="revealCurrent()">Buchstabe aufdecken</button>
+      <button class="primary" onclick="revealAll()">Lösung zeigen</button>
+      <button onclick="resetAll()">Neustart</button>
+    </div>
+
+    <div class="deco-line"></div>
+
+    <div class="clues-container">
+      <div class="clue-section"><h2>→ Waagerecht</h2><div id="across-list"></div></div>
+      <div class="clue-section"><h2>↓ Senkrecht</h2><div id="down-list"></div></div>
+    </div>
+
+    <div id="keyboard">
+      <div class="kb-row">
+        <div class="kb-key" onclick="kbInput('Q')">Q</div><div class="kb-key" onclick="kbInput('W')">W</div><div class="kb-key" onclick="kbInput('E')">E</div><div class="kb-key" onclick="kbInput('R')">R</div><div class="kb-key" onclick="kbInput('T')">T</div><div class="kb-key" onclick="kbInput('Z')">Z</div><div class="kb-key" onclick="kbInput('U')">U</div><div class="kb-key" onclick="kbInput('I')">I</div><div class="kb-key" onclick="kbInput('O')">O</div><div class="kb-key" onclick="kbInput('P')">P</div>
+      </div>
+      <div class="kb-row">
+        <div class="kb-key" onclick="kbInput('A')">A</div><div class="kb-key" onclick="kbInput('S')">S</div><div class="kb-key" onclick="kbInput('D')">D</div><div class="kb-key" onclick="kbInput('F')">F</div><div class="kb-key" onclick="kbInput('G')">G</div><div class="kb-key" onclick="kbInput('H')">H</div><div class="kb-key" onclick="kbInput('J')">J</div><div class="kb-key" onclick="kbInput('K')">K</div><div class="kb-key" onclick="kbInput('L')">L</div>
+      </div>
+      <div class="kb-row">
+        <div class="kb-key wide" onclick="kbDelete()">←</div><div class="kb-key" onclick="kbInput('Y')">Y</div><div class="kb-key" onclick="kbInput('X')">X</div><div class="kb-key" onclick="kbInput('C')">C</div><div class="kb-key" onclick="kbInput('V')">V</div><div class="kb-key" onclick="kbInput('B')">B</div><div class="kb-key" onclick="kbInput('N')">N</div><div class="kb-key" onclick="kbInput('M')">M</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const GRID_SOL=[
+  [null,"W",null,null,null,null,null,null,null,null,null,null,null,null],
+  [null,"A",null,null,"S",null,null,"A",null,null,null,null,null,null],
+  [null,"G",null,null,"I",null,null,"D",null,null,"M",null,null,null],
+  [null,"N","T",null,"M",null,null,"E",null,null,"A","G","S",null],
+  ["H","E","R","Z","O","G","E","N","A","U","R","A","C","H"],
+  [null,"R","A",null,"N","O",null,"A","R",null,"A","T","O",null],
+  [null,null,"M",null,"I","T",null,"U","M",null,"C","S","V",null],
+  [null,null,"I",null,"S","T",null,"E","S",null,"A","B","I",null],
+  [null,null,"T",null,null,"S",null,"R","T",null,"N","Y","L",null],
+  [null,null,"Z",null,null,"C",null,null,"R",null,"A",null,"L",null],
+  [null,null,null,null,null,"H",null,null,"O",null,null,null,"E",null],
+  [null,null,null,null,null,"A",null,null,"N",null,null,null,null,null],
+  [null,null,null,null,null,"L",null,null,"G",null,null,null,null,null],
+  [null,null,null,null,null,"K",null,null,null,null,null,null,null,null],
+];
+const NUMBERS={"0,1":1,"1,4":2,"1,7":3,"2,10":4,"3,1":5,"3,2":6,"3,10":7,"3,11":8,"3,12":9,"4,0":10,"4,5":11,"4,8":12,"5,1":13,"5,4":14,"5,7":15,"5,10":16,"6,4":17,"6,7":18,"6,10":19,"7,4":20,"7,7":21,"7,10":22,"8,7":23,"8,10":24};
+const ACROSS_CLUES={10:"Deutsche Kleinstadt mit drei DAX-notierten Weltkonzernen"};
+const DOWN_CLUES={
+  1:"Franz, Richard und Moritz und Sandro",
+  2:"Wurde dem metaphorischen Heidemörder zum Opfer",
+  3:"Erfand die Sojawurst bezeichnet und half der BRD in die Kinderschuhe",
+  4:"Hier fanden Basti, Thomas und Toni ihr größtes Glück",
+  6:"Dieser Christian war mit Michael und Rick im Weltall und dem wilden Westen",
+  8:"Mysteriöser Neureicher und vortrefflicher Gastgeber",
+  9:"Schmerzmessung in der Kulinarik",
+  11:"Diesen Namen trugen schon Trompeter, Astronauten und Betrüger",
+  12:"Verlor seinen Rilke in Malibu, nicht Colorado",
+};
+
+const ROWS=GRID_SOL.length,COLS=GRID_SOL[0].length;
+let userGrid=Array.from({length:ROWS},()=>Array(COLS).fill(''));
+let activeCell=null,activeDir='down',activeWord=null;
+const WORD_MAP={};
+
+function buildGrid(){
+  const tbody=document.getElementById('grid-body');
+  for(let r=0;r<ROWS;r++){
+    const tr=document.createElement('tr');
+    for(let c=0;c<COLS;c++){
+      const td=document.createElement('td');
+      if(GRID_SOL[r][c]===null){td.className='black';}
+      else{
+        const wrap=document.createElement('div');
+        wrap.className='cell-wrap';wrap.id=`cell--`;
+        const key=`,`;
+        if(NUMBERS[key]){const n=document.createElement('span');n.className='cell-num';n.textContent=NUMBERS[key];wrap.appendChild(n);}
+        const inp=document.createElement('input');
+        inp.className='cell-input';inp.type='text';inp.maxLength=1;inp.autocomplete='off';inp.autocorrect='off';inp.autocapitalize='characters';inp.spellcheck=false;
+        inp.addEventListener('focus',()=>onCellFocus(r,c));
+        inp.addEventListener('input',(e)=>onInput(e,r,c));
+        inp.addEventListener('keydown',(e)=>onKeyDown(e,r,c));
+        inp.addEventListener('click',()=>onCellClick(r,c));
+        wrap.appendChild(inp);td.appendChild(wrap);
+      }
+      tr.appendChild(td);
+    }
+    tbody.appendChild(tr);
+  }
+}
+
+function buildWordMap(){
+  for(const [key,num] of Object.entries(NUMBERS)){
+    const [r,c]=key.split(',').map(Number);
+    const lE=c===0||GRID_SOL[r][c-1]===null,rF=c+1<COLS&&GRID_SOL[r][c+1]!==null;
+    if(lE&&rF){const cells=[];let cc=c;while(cc<COLS&&GRID_SOL[r][cc]!==null){cells.push({r,c:cc});cc++;}if(cells.length>1)WORD_MAP[`-across`]={num,dir:'across',cells};}
+    const uE=r===0||GRID_SOL[r-1][c]===null,dF=r+1<ROWS&&GRID_SOL[r+1][c]!==null;
+    if(uE&&dF){const cells=[];let rr=r;while(rr<ROWS&&GRID_SOL[rr][c]!==null){cells.push({r:rr,c});rr++;}if(cells.length>1)WORD_MAP[`-down`]={num,dir:'down',cells};}
+  }
+}
+
+function buildClues(){
+  const aL=document.getElementById('across-list'),dL=document.getElementById('down-list');
+  for(const [num,clue] of Object.entries(ACROSS_CLUES))aL.appendChild(clueEl(num,clue,'across'));
+  for(const [num,clue] of Object.entries(DOWN_CLUES))dL.appendChild(clueEl(num,clue,'down'));
+  document.getElementById('total-count').textContent=Object.keys(DOWN_CLUES).length+Object.keys(ACROSS_CLUES).length;
+}
+
+function clueEl(num,clue,dir){
+  const div=document.createElement('div');div.className='clue-item';div.id=`clue--`;
+  div.innerHTML=`<span class="clue-num"></span><span></span>`;
+  div.addEventListener('click',()=>activateWord(Number(num),dir));
+  return div;
+}
+
+const getInput=(r,c)=>{const w=document.getElementById(`cell--`);return w?w.querySelector('.cell-input'):null;};
+const getWrap=(r,c)=>document.getElementById(`cell--`);
+const getWordForCell=(r,c,dir)=>{for(const w of Object.values(WORD_MAP))if(w.dir===dir&&w.cells.some(x=>x.r===r&&x.c===c))return w;return null;};
+
+function setActiveCell(r,c,dir){
+  activeCell={r,c};
+  let word=getWordForCell(r,c,dir);
+  if(!word){dir=dir==='across'?'down':'across';word=getWordForCell(r,c,dir);}
+  activeDir=dir;activeWord=word;renderHighlights();renderActiveClue();
+}
+function onCellClick(r,c){
+  if(activeCell&&activeCell.r===r&&activeCell.c===c){
+    const nd=activeDir==='across'?'down':'across';
+    if(getWordForCell(r,c,nd)){activeDir=nd;activeWord=getWordForCell(r,c,nd);renderHighlights();renderActiveClue();}
+  }else setActiveCell(r,c,activeDir);
+}
+function onCellFocus(r,c){if(!activeCell||activeCell.r!==r||activeCell.c!==c)setActiveCell(r,c,activeDir);}
+function activateWord(num,dir){
+  const word=WORD_MAP[`-`];if(!word)return;
+  activeWord=word;activeDir=dir;
+  const t=word.cells.find(({r,c})=>!userGrid[r][c])||word.cells[0];
+  activeCell={r:t.r,c:t.c};renderHighlights();renderActiveClue();getInput(t.r,t.c)?.focus();
+}
+function renderHighlights(){
+  document.querySelectorAll('.cell-wrap').forEach(w=>w.classList.remove('active','highlighted'));
+  if(!activeWord)return;
+  for(const {r,c} of activeWord.cells){
+    const wrap=getWrap(r,c);if(!wrap)continue;
+    if(activeCell&&r===activeCell.r&&c===activeCell.c)wrap.classList.add('active');
+    else wrap.classList.add('highlighted');
+  }
+  document.querySelectorAll('.clue-item').forEach(el=>el.classList.remove('active'));
+  const ce=document.getElementById(`clue--`);
+  if(ce){ce.classList.add('active');ce.scrollIntoView({block:'nearest'});}
+}
+function renderActiveClue(){
+  const bar=document.getElementById('active-clue');
+  if(!activeWord){bar.classList.remove('visible');return;}
+  const clues=activeWord.dir==='across'?ACROSS_CLUES:DOWN_CLUES;
+  const clue=clues[activeWord.num];if(!clue){bar.classList.remove('visible');return;}
+  document.getElementById('active-tag').textContent=`'↓' `;
+  document.getElementById('active-text').textContent=clue;
+  bar.classList.add('visible');
+}
+function advanceCursor(r,c){
+  if(!activeWord)return;
+  const cells=activeWord.cells,idx=cells.findIndex(x=>x.r===r&&x.c===c);
+  if(idx<cells.length-1){const n=cells[idx+1];activeCell=n;renderHighlights();getInput(n.r,n.c)?.focus();}
+}
+function retreatCursor(r,c){
+  if(!activeWord)return;
+  const cells=activeWord.cells,idx=cells.findIndex(x=>x.r===r&&x.c===c);
+  if(idx>0){const p=cells[idx-1];activeCell=p;renderHighlights();const inp=getInput(p.r,p.c);if(inp){inp.focus();inp.value='';userGrid[p.r][p.c]='';clearState(p.r,p.c);}}
+}
+function onInput(e,r,c){
+  let val=e.target.value.toUpperCase().replace(/[^A-Z]/g,'');
+  if(val.length>1)val=val.slice(-1);
+  e.target.value=val;userGrid[r][c]=val;clearState(r,c);
+  if(val)advanceCursor(r,c);checkWordComplete();
+}
+function onKeyDown(e,r,c){
+  if(e.key==='Backspace'){e.preventDefault();if(userGrid[r][c]){userGrid[r][c]='';getInput(r,c).value='';clearState(r,c);}else retreatCursor(r,c);}
+  else if(e.key==='ArrowRight'){e.preventDefault();moveCell(r,c,0,1);}
+  else if(e.key==='ArrowLeft'){e.preventDefault();moveCell(r,c,0,-1);}
+  else if(e.key==='ArrowDown'){e.preventDefault();moveCell(r,c,1,0);}
+  else if(e.key==='ArrowUp'){e.preventDefault();moveCell(r,c,-1,0);}
+  else if(e.key==='Tab'){e.preventDefault();nextWord(e.shiftKey);}
+}
+function moveCell(r,c,dr,dc){
+  const nr=r+dr,nc=c+dc;
+  if(nr>=0&&nr<ROWS&&nc>=0&&nc<COLS&&GRID_SOL[nr][nc]!==null){
+    activeCell={r:nr,c:nc};
+    if(dr!==0)activeDir='down';if(dc!==0)activeDir='across';
+    activeWord=getWordForCell(nr,nc,activeDir)||getWordForCell(nr,nc,activeDir==='across'?'down':'across');
+    renderHighlights();renderActiveClue();getInput(nr,nc)?.focus();
+  }
+}
+function nextWord(reverse){
+  const keys=Object.keys(WORD_MAP);if(!keys.length)return;
+  const cKey=activeWord?`-`:'';
+  let idx=keys.indexOf(cKey);
+  idx=reverse?(idx-1+keys.length)%keys.length:(idx+1)%keys.length;
+  const w=WORD_MAP[keys[idx]];activateWord(w.num,w.dir);
+}
+function kbInput(letter){
+  if(!activeCell)return;
+  const {r,c}=activeCell;const inp=getInput(r,c);if(!inp)return;
+  userGrid[r][c]=letter;inp.value=letter;clearState(r,c);advanceCursor(r,c);checkWordComplete();
+}
+function kbDelete(){
+  if(!activeCell)return;
+  const {r,c}=activeCell;
+  if(userGrid[r][c]){userGrid[r][c]='';getInput(r,c).value='';clearState(r,c);}
+  else retreatCursor(r,c);
+}
+const clearState=(r,c)=>{const w=getWrap(r,c);if(w)w.classList.remove('correct','wrong','revealed');};
+function checkAll(){
+  let ok=true;
+  for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++){
+    if(GRID_SOL[r][c]===null)continue;
+    const wrap=getWrap(r,c);if(!wrap)continue;
+    const val=userGrid[r][c];if(!val){ok=false;continue;}
+    wrap.classList.remove('correct','wrong');
+    if(val===GRID_SOL[r][c])wrap.classList.add('correct');
+    else{wrap.classList.add('wrong');ok=false;}
+  }
+  if(ok)showSuccess();
+}
+function revealCurrent(){
+  if(!activeCell)return;
+  const {r,c}=activeCell,sol=GRID_SOL[r][c];if(!sol)return;
+  const wrap=getWrap(r,c),inp=getInput(r,c);
+  userGrid[r][c]=sol;inp.value=sol;
+  wrap.classList.remove('correct','wrong');wrap.classList.add('revealed');
+  advanceCursor(r,c);checkWordComplete();
+}
+function revealAll(){
+  for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++){
+    if(!GRID_SOL[r][c])continue;
+    const wrap=getWrap(r,c),inp=getInput(r,c);if(!inp)continue;
+    userGrid[r][c]=GRID_SOL[r][c];inp.value=GRID_SOL[r][c];
+    wrap.classList.remove('correct','wrong');wrap.classList.add('revealed');
+  }
+  updateProgress();
+}
+function resetAll(){
+  for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++){
+    userGrid[r][c]='';const inp=getInput(r,c),wrap=getWrap(r,c);
+    if(inp)inp.value='';if(wrap)wrap.classList.remove('correct','wrong','revealed');
+  }
+  document.querySelectorAll('.clue-item').forEach(el=>el.classList.remove('done'));
+  document.getElementById('success-banner').style.display='none';
+  updateProgress();
+}
+function checkWordComplete(){
+  updateProgress();
+  for(const [,word] of Object.entries(WORD_MAP)){
+    const done=word.cells.every(({r,c})=>userGrid[r][c]===GRID_SOL[r][c]);
+    const ce=document.getElementById(`clue--`);
+    if(ce)ce.classList.toggle('done',done);
+  }
+}
+function updateProgress(){
+  const correctWords=Object.values(WORD_MAP).filter(w=>w.cells.every(({r,c})=>userGrid[r][c]===GRID_SOL[r][c])).length;
+  const total=Object.keys(DOWN_CLUES).length+Object.keys(ACROSS_CLUES).length;
+  document.getElementById('solved-count').textContent=correctWords;
+  document.getElementById('pct').textContent=Math.round(correctWords/total*100)+'%';
+  if(correctWords===total)showSuccess();
+}
+function showSuccess(){
+  const b=document.getElementById('success-banner');b.style.display='block';
+  b.scrollIntoView({behavior:'smooth',block:'center'});
+}
+
+buildGrid();buildWordMap();buildClues();updateProgress();
+activateWord(10,'across');
+</script>
+</body>
+</html
